@@ -1,0 +1,5 @@
+{
+  "java.compile.nullAnalysis.mode": "disabled",
+  "java.dependency.syncWithFolderExplorer": false,
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
