@@ -5,7 +5,9 @@ import { palette } from '../../../theme/palette';
 import AccessableIcon from './AccessableIcon';
 import LevelLogoIcon from './LoadLogoIcon';
 import UnfinishedCourseIcon from './UnfinishedCourseIcon';
+import LockIcon from './LockIcon';
 import FastImage from 'react-native-fast-image';
+import EmptyIcon from './EmptyIcon';
 
 type LevelGridProps = SvgProps & {
   index?: number;
@@ -13,6 +15,8 @@ type LevelGridProps = SvgProps & {
   halfLock?: boolean;
   color?: string;
   image?: any;
+  disabled?: boolean;
+  finished?: boolean;
 };
 const LevelGridIcon: React.FC<LevelGridProps> = ({
   index,
@@ -20,13 +24,23 @@ const LevelGridIcon: React.FC<LevelGridProps> = ({
   halfLock,
   color,
   image,
+  disabled,
+  finished,
   ...props
 }) => {
+  const currentColor = React.useMemo(() => {
+    if (disabled) {
+      return 'rgba(19, 20, 20, 0.25)';
+    } else {
+      return color;
+    }
+  }, [color, disabled]);
+
   return (
     <View justifyContent="center" alignItems="center">
       <Svg width={111} height={122} fill="none" {...props}>
         <Path
-          fill={logo ? palette.brownGrey : color}
+          fill={logo ? palette.brownGrey : currentColor}
           d="M65.105 118.626a19.998 19.998 0 0 1-20 0L10 98.358a20 20 0 0 1-10-17.32V40.502a20 20 0 0 1 10-17.32L45.105 2.914a20 20 0 0 1 20 0l35.104 20.268a20 20 0 0 1 10 17.32v40.536a20 20 0 0 1-10 17.32l-35.104 20.268Z"
         />
       </Svg>
@@ -50,10 +64,14 @@ const LevelGridIcon: React.FC<LevelGridProps> = ({
           </View>
 
           <View paddingTop={7}>
-            {halfLock ? (
-              <UnfinishedCourseIcon color={color} />
+            {disabled ? (
+              <LockIcon color={currentColor} />
+            ) : finished ? (
+              <AccessableIcon color={currentColor} />
+            ) : halfLock ? (
+              <UnfinishedCourseIcon color={currentColor} />
             ) : (
-              <AccessableIcon color={color} />
+              <EmptyIcon />
             )}
           </View>
         </VStack>

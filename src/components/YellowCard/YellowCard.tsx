@@ -17,6 +17,7 @@ interface YellowCardProps {
 const YellowCard: FC<YellowCardProps> = ({ onPress }) => {
   const choosenClass = useAtomValue(ChoosenClassAtom);
   const { t } = useTranslation();
+  console.log('choosenClass',choosenClass)
 
   return (
     <Pressable onPress={onPress}>

@@ -3,7 +3,6 @@ import { palette } from '../../theme/palette';
 
 const styles = StyleSheet.create({
   container: {
-    bottom: 12,
     alignSelf: 'center',
     position: 'absolute',
     width: '92%',

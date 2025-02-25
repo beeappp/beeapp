@@ -1,11 +1,9 @@
-import { FlatList, Pressable, View, VStack } from '@gluestack-ui/themed';
-import React, { useCallback, useRef, useState } from 'react';
+import { FlatList, Spinner, View, VStack } from '@gluestack-ui/themed';
+import React, { useRef, useState } from 'react';
 import { Layout } from '../../navigator/Layout';
 import LevelGridItem from '../../components/LevelGridItem';
-import LevelGridIcon from '../../assets/icons/LevelScreen/LevelGridIcon';
-import BlankMediumIcon from '../../assets/icons/LevelScreen/BlankMediumIcon';
-import BlankSmallIcon from '../../assets/icons/LevelScreen/BlankSmallIcon';
-import { Platform } from 'react-native';
+
+import { Dimensions, Platform } from 'react-native';
 import { useCourses } from '../../store/courses';
 import {
   BottomSheetModalProvider,
@@ -24,6 +22,10 @@ import { Course } from '../../store/courses/types';
 import { useLessons } from '../../store/lesson';
 import { useExercises } from '../../store/exercise';
 import { useNavigation } from '@react-navigation/native';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { ChoosenClassAtom, CoursesItemsAtom } from '../../tools/atoms/common';
+
+const { height } = Dimensions.get('window');
 
 const ClassLevelsScreen = () => {
   const { t } = useTranslation();
@@ -32,23 +34,68 @@ const ClassLevelsScreen = () => {
 
   const { getLessonsByCourseId } = useLessons();
   const { getExercisesByCourseId } = useExercises();
+  const setChoosenClass = useSetAtom(ChoosenClassAtom);
+  const finishedCourses = useAtomValue(CoursesItemsAtom);
 
   const bottomSheetModalRef = useRef<BSModal>(null);
 
   const [state, setState] = useState<Course[]>(courses?.data || []);
-  const [visibleItems, setVisibleItems] = useState<number>(4);
   const [currentCourse, setCurrentCourse] = useState<number | null>(null);
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [isLoading, setIsLoading] = useState<'Exercise' | 'VideoLesson' | null>(
     null
   );
 
+  console.log('finishedCourses', finishedCourses);
   const renderItem: any = ({
     item,
     index,
   }: {
     item: Course;
     index: number;
-  }) => <LevelGridItem item={item} index={index} PickingClass={PickingClass} />;
+  }) => {
+    let disabled = !!index;
+    let halfLock = false;
+    let finished = false;
+    const currentFinishedCourse = finishedCourses[item.id];
+    console.log('currentFinishedCourse', currentFinishedCourse);
+    const prevFinishedCourse = index && finishedCourses[state[index - 1].id];
+
+    if (currentFinishedCourse) {
+      if (
+        currentFinishedCourse.videoLessonFinished &&
+        currentFinishedCourse.exercisesFinished
+      ) {
+        finished = true;
+      } else if (
+        currentFinishedCourse.videoLessonFinished !==
+        currentFinishedCourse.exercisesFinished
+      ) {
+        halfLock = true;
+      }
+    }
+
+    if (prevFinishedCourse) {
+      if (
+        prevFinishedCourse.videoLessonFinished &&
+        prevFinishedCourse.exercisesFinished
+      ) {
+        disabled = false;
+      }
+    }
+    console.log('halfLock', halfLock);
+    return (
+      <LevelGridItem
+        item={item}
+        index={index}
+        PickingClass={PickingClass}
+        disabled={disabled}
+        halfLock={halfLock}
+        finished={finished}
+      />
+    );
+  };
 
   const PickingClass = async (index: number) => {
     setCurrentCourse(index);
@@ -66,14 +113,6 @@ const ClassLevelsScreen = () => {
     }
   };
 
-  const loadMoreItems = useCallback(async () => {
-    if (visibleItems + 4 == state.length && courses) {
-      const res = await getCourses(courses?.current_page + 1);
-      setState(prev => [...prev, ...res.data]);
-    }
-    setVisibleItems(prevVisibleItems => prevVisibleItems + 4);
-  }, [courses, visibleItems, state]);
-
   const goToCourse = async (screen: 'Exercise' | 'VideoLesson') => {
     if (currentCourse === null) {
       close();
@@ -84,6 +123,7 @@ const ClassLevelsScreen = () => {
       screen === 'VideoLesson' ? getLessonsByCourseId : getExercisesByCourseId;
     try {
       await getFunction(state[currentCourse].id);
+      setChoosenClass(currentCourse + 1);
       navigation.navigate('LessonStack', {
         screen,
       });
@@ -96,58 +136,68 @@ const ClassLevelsScreen = () => {
     }
   };
 
+  const onLoadMore = async () => {
+    console.log('load');
+    if (loadingMore || !state.length) {
+      return;
+    }
+    setLoadingMore(true);
+    if (state.length && courses) {
+      try {
+        const res = await getCourses(courses.current_page + 1);
+        setState(prev => [...prev, ...res.data]);
+        setTimeout(() => {
+          setLoadingMore(false);
+        }, 1000);
+      } catch (e) {
+        console.log(e);
+        setLoadingMore(false);
+      }
+    }
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Layout bottom top padding>
         <VStack flex={1}>
-          {/* <ClassHeader
-            // id={choseClass}
-            onPress={() => {
-              navigation.navigate('LessonStack');
+          <FlatList
+            w={'100%'}
+            height={height}
+            showsVerticalScrollIndicator={false}
+            style={{
+              marginBottom: 68,
             }}
-            classTitle="Араб алфавитін үйрену"
-          /> */}
-          <View flex={1} alignItems="center" justifyContent="space-between">
-            <FlatList
-              w={'100%'}
-              marginTop={30}
-              showsVerticalScrollIndicator={false}
-              style={{ paddingTop: 24 }}
-              data={state.slice(0, visibleItems) || []} //courses
-              renderItem={renderItem}
-              keyExtractor={(_, i) => i.toString()}
-              ListFooterComponent={
-                visibleItems < state.length ? (
-                  <View
-                    ml={55}
-                    mt={-10}
-                    marginBottom={Platform.select({ android: 120, ios: 100 })}
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <View position="absolute" left={17} top={10}>
-                      <BlankMediumIcon />
-                    </View>
-                    <View position="absolute" right={42} top={20}>
-                      <BlankSmallIcon />
-                    </View>
-                    <Pressable
-                      overflow="hidden"
-                      onPress={loadMoreItems}
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <LevelGridIcon logo />
-                    </Pressable>
-                  </View>
-                ) : (
-                  <View
-                    marginBottom={Platform.select({ android: 120, ios: 100 })}
-                  />
-                )
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingVertical: 20,
+            }}
+            data={state || []}
+            renderItem={renderItem}
+            keyExtractor={(_, i) => i.toString()}
+            onEndReached={() => {
+              setCallOnScrollEnd(true);
+            }}
+            onMomentumScrollEnd={event => {
+              const { contentOffset } = event.nativeEvent;
+              if (callOnScrollEnd && contentOffset.y > 0) {
+                onLoadMore();
               }
-            />
-          </View>
+              setCallOnScrollEnd(false);
+            }}
+            ListFooterComponent={
+              loadingMore ? (
+                <View
+                  ml={55}
+                  mt={25}
+                  height={36}
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <Spinner size={'large'} color={'green'} />
+                </View>
+              ) : null
+            }
+          />
         </VStack>
       </Layout>
 

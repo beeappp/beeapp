@@ -76,7 +76,7 @@ const AppNavigator = () => {
       } finally {
         setTimeout(() => {
           LottieSplashScreen.hide();
-        }, 1000);
+        }, 3000);
       }
     };
     init();

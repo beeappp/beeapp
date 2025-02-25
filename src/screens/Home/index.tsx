@@ -1,18 +1,14 @@
 import {
   HStack,
-  Icon,
-  Pressable,
   ScrollView,
-  View,
   VStack,
 } from '@gluestack-ui/themed';
-import React, { useState } from 'react';
+import React from 'react';
 import { Layout } from '../../navigator/Layout';
 import moment from 'moment';
 import 'moment/locale/kk';
 import Text from '../../components/Text/Text';
 import { styles } from './styles';
-import NotificationIcon from '../../assets/icons/Notification/NotificationIcon';
 import BlueCard from '../../components/BlueCard/BlueCard';
 import YellowCard from '../../components/YellowCard/YellowCard';
 import { useNavigation } from '@react-navigation/native';
@@ -41,23 +37,22 @@ const HomeScreen = () => {
               <Text color={'#B9B9BC'} style={styles.timeText}>
                 {formattedDate}
               </Text>
-              <Pressable
+              {/* <Pressable
                 onPress={() => {}}
                 style={styles.notificationIcon}
                 hitSlop={{ bottom: 20, left: 20, top: 20, right: 20 }}
               >
                 <Icon as={NotificationIcon} />
-              </Pressable>
+              </Pressable> */}
             </HStack>
             <VStack width={'100%'} height={'100%'}>
               <VStack w={'100%'} pt={30}>
-                <Text style={styles.textHeader}>{t('hello')},</Text>
+                <Text style={styles.textHeader}>{t('hello')}</Text>
                 <Text style={styles.textHeader}>
-                  {currentUser?.first_name}!
+                  {`${currentUser?.name}!`}
                 </Text>
               </VStack>
               <VStack flex={1} style={styles.cardContainer}>
-                <VStack gap={20} mb={90} mt={30}>
                   <YellowCard
                     onPress={() => {
                       navigation.navigate('ClassLevel');
@@ -68,7 +63,6 @@ const HomeScreen = () => {
                       navigation.navigate('ReadKuran');
                     }}
                   />
-                </VStack>
               </VStack>
             </VStack>
           </VStack>

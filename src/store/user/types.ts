@@ -18,7 +18,7 @@ export type RegisterRequest = {
 };
 
 export type UserData = {
-  first_name: string;
+  name: string;
   last_name: string;
   phone: string;
   email: string;

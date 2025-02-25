@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   },
   textHeader: {
     fontFamily: typography.medium,
-    fontSize: 32,
+    fontSize: 30,
     lineHeight: 35,
     color: palette.lightDark,
   },

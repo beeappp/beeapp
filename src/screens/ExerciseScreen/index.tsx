@@ -32,6 +32,9 @@ import ExerciseAnswerModal from '../../components/ExerciseModals/ExerciseAnswerM
 import { useExercises } from '../../store/exercise';
 import MistakenExerciseIcon from '../../assets/icons/MistakenExercise/MistakenExerciseIcon';
 import { ExercisesByCourse } from '../../store/exercise/types';
+import { useLessons } from '../../store/lesson';
+import { useAtom } from 'jotai';
+import { CoursesItemsAtom } from '../../tools/atoms/common';
 
 const { width } = Dimensions.get('window');
 
@@ -80,8 +83,26 @@ const ExerciseScreen = () => {
   };
 
   const openWithMistakeModal = async () => {
+    if (!exercises[0]) {
+      return;
+    }
     setModalType(2);
     open();
+    if (courses[exercises[0].course_id]) {
+      const newCourse = {
+        ...courses[exercises[0].course_id],
+        exercisesFinished: true,
+      };
+      setCourse({ ...courses, [exercises[0].course_id]: newCourse });
+    } else {
+      setCourse({
+        ...courses,
+        [exercises[0].course_id]: {
+          videoLessonFinished: false,
+          exercisesFinished: true,
+        },
+      });
+    }
   };
 
   const moveNextQuestion = () => {
@@ -227,6 +248,9 @@ const ExerciseScreen = () => {
     }
   };
 
+  const { getLessonsByCourseId } = useLessons();
+  const [courses, setCourse] = useAtom(CoursesItemsAtom);
+
   const ModalTypes = useCallback(
     (type: number) => {
       switch (type) {
@@ -240,7 +264,17 @@ const ExerciseScreen = () => {
               onPressTop={navigation.goBack}
               onPressBottom={
                 finishedWork
-                  ? () => navigation.replace('VideoLesson')
+                  ? async () => {
+                      try {
+                        if (exercises[0]) {
+                          await getLessonsByCourseId(exercises[0].course_id);
+                          navigation.replace('VideoLesson');
+                        }
+                      } catch (e) {
+                        navigation.goBack();
+                        console.log('Error ', e);
+                      }
+                    }
                   : startWorkWithMistake
               }
               finished={finishedWork}
@@ -299,7 +333,7 @@ const ExerciseScreen = () => {
               data={itemData}
               renderItem={renderItem}
               extraData={refreshData}
-              keyExtractor={item => item.id}
+              keyExtractor={item => String(item.id)}
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}

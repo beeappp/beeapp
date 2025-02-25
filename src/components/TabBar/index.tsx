@@ -48,7 +48,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   return (
     <HStack
       style={styles.container}
-      paddingBottom={Platform.OS === 'android' ? bottom : bottom - 8}
+      bottom={Platform.OS === 'android' ? bottom : bottom - 8}
     >
       {state.routes.map((route: Route, index: number) => {
         const { options } = descriptors[route.key];

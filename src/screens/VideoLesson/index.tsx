@@ -36,6 +36,9 @@ import { useTranslation } from 'react-i18next';
 
 import YoutubePlayer from 'react-native-youtube-iframe';
 import CorrectRecordIcon from '../../assets/icons/CorrectRecordicon/CorrectrecordIcon';
+import { useExercises } from '../../store/exercise';
+import { useAtom } from 'jotai';
+import { CoursesItemsAtom } from '../../tools/atoms/common';
 
 const { width, height } = Dimensions.get('window');
 
@@ -57,6 +60,8 @@ const VideoLessonScreen = () => {
 
   const { top } = useSafeAreaInsets();
   const { lessonsByCourseId, checkLesson } = useLessons();
+  const { getExercisesByCourseId } = useExercises();
+
   const { t } = useTranslation();
   const [currentTimecodeIndex, setCurrentTimecodeIndex] = useState<number>(0);
 
@@ -86,10 +91,12 @@ const VideoLessonScreen = () => {
   const [playing, setPlaying] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const [currentTime, setCurrentTime] = useState('00:00:00');
+  const [currentTime, setCurrentTime] = useState('00:00');
   const [loopCount, setLoopCount] = useState(0);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [courses, setCourse] = useAtom(CoursesItemsAtom);
 
   const isLooped = useMemo(() => loopCount > 0, [loopCount]);
 
@@ -179,8 +186,26 @@ const VideoLessonScreen = () => {
   );
 
   const correctAnswerModal = useCallback(() => {
+    if (!currentLesson) {
+      return;
+    }
     setTypeModal(0);
     open();
+    if (courses[currentLesson.course_id]) {
+      const newCourse = {
+        ...courses[currentLesson.course_id],
+        videoLessonFinished: true,
+      };
+      setCourse({ ...courses, [currentLesson.course_id]: newCourse });
+    } else {
+      setCourse({
+        ...courses,
+        [currentLesson.course_id]: {
+          videoLessonFinished: true,
+          exercisesFinished: false,
+        },
+      });
+    }
   }, []);
 
   const exitVideoLesson = useCallback(() => {
@@ -212,7 +237,7 @@ const VideoLessonScreen = () => {
       if (playerRef.current) {
         const elapsed_sec = await playerRef.current?.getCurrentTime();
         const elapsed_ms = Math.floor(elapsed_sec * 1000);
-        const ms = elapsed_ms % 1000;
+        // const ms = elapsed_ms % 1000;
         const min = Math.floor(elapsed_ms / 60000);
         const seconds = Math.floor((elapsed_ms - min * 60000) / 1000);
 
@@ -230,9 +255,7 @@ const VideoLessonScreen = () => {
         const fullTime =
           min.toString().padStart(2, '0') +
           ':' +
-          seconds.toString().padStart(2, '0') +
-          ':' +
-          ms.toString().padStart(3, '0');
+          seconds.toString().padStart(2, '0');
 
         setCurrentTime(fullTime);
       }
@@ -260,7 +283,17 @@ const VideoLessonScreen = () => {
         topButtonFunc: () => navigation.navigate('HomeStack'),
         topButtonDisabled: false,
         bottomButtonText: 'video_toExercise',
-        bottomButtonFunc: () => navigation.replace('Exercise'),
+        bottomButtonFunc: async () => {
+          try {
+            if (currentLesson) {
+              await getExercisesByCourseId(currentLesson.course_id);
+              navigation.replace('Exercise');
+            }
+          } catch (e) {
+            console.log('Error ', e);
+            navigation.goBack();
+          }
+        },
         bottomButtonDisabled: false,
         optionalButtonText: '',
         optionalButtonFunc: () => {},
@@ -298,8 +331,10 @@ const VideoLessonScreen = () => {
           close();
         },
         bottomButtonDisabled: isCorrect ? false : loopCount < 3,
-        optionalButtonText: 'video_stay',
-        optionalButtonFunc: () => navigation.goBack(),
+        optionalButtonText: '',
+        optionalButtonFunc: () => {},
+        // optionalButtonText: 'video_stay',
+        // optionalButtonFunc: () => navigation.goBack(),
       },
     };
   }, [loopCount, isCorrect]);
@@ -382,7 +417,7 @@ const VideoLessonScreen = () => {
                   />
                 ) : null}
                 {!isRecording && isLoading ? (
-                  <TouchableOpacity onPress={correctAnswerModal}>
+                  <TouchableOpacity>
                     <CorrectRecordIcon />
                   </TouchableOpacity>
                 ) : null}
@@ -392,7 +427,7 @@ const VideoLessonScreen = () => {
         </Layout>
         <BottomSheetModal
           modalRef={bottomSheetModalRef}
-          modalHeight={typeModal !== 2 ? 308 : 350}
+          modalHeight={300}
           noBackDrop={true}
           enablePanDownToClose={false}
         >

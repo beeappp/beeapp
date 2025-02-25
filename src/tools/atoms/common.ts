@@ -21,6 +21,13 @@ export const ChoosenClassAtom = atomWithMMKV<number>(
   AtomsKeysBook.ChoosenClass,
   1
 );
+
+export const CoursesItemsAtom = atomWithMMKV<{
+  [key: string]: {
+    videoLessonFinished: boolean;
+    exercisesFinished: boolean;
+  };
+}>(AtomsKeysBook.CoursesItemsAtom, {});
 export const LastReadSurahAtom = atomWithMMKV<Surah[] | null>(
   AtomsKeysBook.LastReadSurahAtom,
   null

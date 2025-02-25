@@ -14,12 +14,22 @@ import { chosenGrid } from '../../tools/atoms/common';
 interface Props {
   item: Course;
   index: number;
+  halfLock: boolean;
+  disabled: boolean;
+  finished: boolean;
   PickingClass: (index: number) => void;
 }
 
 const backgroundLayout = ['first', 'second', 'third', 'fourth'];
 
-const LevelGridItem: FC<Props> = ({ item, index, PickingClass }) => {
+const LevelGridItem: FC<Props> = ({
+  item,
+  index,
+  halfLock,
+  disabled,
+  finished,
+  PickingClass,
+}) => {
   const { published, color, image_path, id } = item;
   const [choseClass, setChoseClass] = useAtom(chosenGrid);
 
@@ -84,12 +94,15 @@ const LevelGridItem: FC<Props> = ({ item, index, PickingClass }) => {
                     setChoseClass(`${id}`);
                     PickingClass(index);
                   }}
+                  disabled={disabled}
                 >
                   <LevelGridIcon
+                    disabled={disabled}
                     color={color || '#8CC14A'}
                     index={number}
-                    halfLock={false} //halflock
+                    halfLock={halfLock} //halflock
                     image={image_path}
+                    finished={finished}
                   />
                 </Pressable>
               </View>

@@ -13,7 +13,7 @@ import {
   BottomSheetModalProvider,
   BottomSheetModal as BSModal,
 } from '@gorhom/bottom-sheet';
-import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { Linking, Platform, StyleSheet, TouchableOpacity } from 'react-native';
 import { palette } from '../../theme/palette';
 import { typography } from '../../theme/typography';
 import PaymnetNoticeIcon from '../../assets/icons/Settings/PaymentNoticeIcon';
@@ -37,12 +37,15 @@ import Button from '../../components/Button/Button';
 import BottomModal from '../../components/LogOutModal';
 import LogOutModal from '../../components/LogOutModal';
 import { Portal } from '@gorhom/portal';
+import { useSetAtom } from 'jotai';
+import { CoursesItemsAtom } from '../../tools/atoms/common';
 
 type SettingsOption = {
   id: string;
   icon: JSX.Element;
   label: string;
   navigation?: string;
+  navigationLink?: string;
 };
 
 const SettingsScreen = () => {
@@ -51,6 +54,7 @@ const SettingsScreen = () => {
   const { t } = useTranslation();
   const { logout } = useUser();
   const bottomSheetModalRef = useRef<BSModal>(null);
+  const setCourse = useSetAtom(CoursesItemsAtom);
 
   const settingsOptions: SettingsOption[] = [
     {
@@ -65,16 +69,17 @@ const SettingsScreen = () => {
       label: t('enable_notice'),
       navigation: 'NotificationSetting',
     },
-    {
-      id: '3',
-      icon: <Coloricon />,
-      label: t('setting_color'),
-      navigation: 'ColorChange',
-    },
+    // {
+    //   id: '3',
+    //   icon: <Coloricon />,
+    //   label: t('setting_color'),
+    //   navigation: 'ColorChange',
+    // },
     {
       id: '4',
       icon: <SupportIcon />,
       label: t('setting_help'),
+      navigationLink: 'https://t.me/K20Bee',
     },
     {
       id: '5',
@@ -84,6 +89,11 @@ const SettingsScreen = () => {
     },
     {
       id: '6',
+      icon: <Coloricon />,
+      label: 'Прогресті өшіру ',
+    },
+    {
+      id: '7',
       icon: <LogOutIcon />,
       label: t('log_out'),
       // navigation: 'About',
@@ -115,10 +125,14 @@ const SettingsScreen = () => {
     <TouchableOpacity
       style={styles.item}
       onPress={() => {
-        if (item.id === '6') {
+        if (item.id === '7') {
           open();
+        } else if (item.id === '6') {
+          setCourse({});
         } else {
-          item.navigation == 'PaymentNotice'
+          item.navigationLink
+            ? Linking.openURL(item.navigationLink)
+            : item.navigation == 'PaymentNotice'
             ? navigation.navigate('PaymentNotice', { fromSetting: true })
             : item.navigation
             ? navigation.navigate(item.navigation)

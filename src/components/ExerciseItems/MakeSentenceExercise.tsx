@@ -128,7 +128,9 @@ const MakeSentenceExercise: FC<Props> = ({
       width={'100%'}
       height={'100%'}
       alignItems="center"
-      justifyContent="space-evenly"
+      justifyContent="space-between"
+      pt={50}
+      pb={25}
     >
       <VStack alignItems="center" gap={30}>
         <Text style={styles.headerText}>{t('sentence_exercise')}</Text>

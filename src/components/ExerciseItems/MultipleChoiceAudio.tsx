@@ -129,14 +129,15 @@ const MultipleChoiceAudio: FC<Props> = ({
       resetPlayer();
     };
   }, []);
-  console.log('youtubePath', youtubePath);
 
   return (
     <VStack
       width={'100%'}
       height={'100%'}
       alignItems="center"
-      justifyContent="space-evenly"
+      justifyContent="space-between"
+      pt={50}
+      pb={25}
     >
       <Text style={[styles.headerText, { writingDirection: 'ltr' }]}>
         {questionItem.question_text}
@@ -158,14 +159,23 @@ const MultipleChoiceAudio: FC<Props> = ({
           )}
         </TouchableOpacity>
       ) : questionType === 3 && youtubePath ? (
-        <Box width={width} height={220}>
+        <Box
+          width={width - 40}
+          height={220}
+          overflow="hidden"
+          borderRadius={20}
+        >
           <YoutubePlayer
-            webViewStyle={{ right: 350 }}
+            webViewStyle={{ right: 370 }}
             width={width + 700}
             height={220}
             videoId={youtubePath}
             initialPlayerParams={{
               controls: false,
+              // showClosedCaptions: true,
+              loop: true,
+              // modestbranding: false,
+              // rel: false,
             }}
             webViewProps={{
               injectedJavaScript: `
