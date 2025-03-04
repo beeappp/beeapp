@@ -5,6 +5,7 @@ import baseService, {
 import { useSelector } from '../../utils/hooks';
 import { remove } from '../../utils/storage';
 import { userActions } from './slice';
+import { deleteUser } from './thunk/deleteUser';
 import { loginUser } from './thunk/loginUser';
 import { registerUser } from './thunk/registerUser';
 import { resendValidation } from './thunk/resendValidation';
@@ -26,6 +27,8 @@ export const useUser = () => {
     registerUser: async (registerData: RegisterRequest) =>
       dispatch(registerUser(registerData)).unwrap(),
     logout,
+    deleteUser: async (state: { userId: number }) =>
+      dispatch(deleteUser(state)).unwrap(),
     loginUser: async (loginData: LoginRequest) =>
       dispatch(loginUser(loginData)).unwrap(),
     resendValidation: async (email: string) =>

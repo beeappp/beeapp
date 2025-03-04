@@ -109,6 +109,8 @@ export default {
   setting_help: 'Көмек және қолдау',
   setting_about: 'Қосымша туралы',
   log_out: 'Аккаунттан шығу',
+  delete: 'Аккаунтты өшіру',
+  confirm_delete: 'Өшіру',
   push_notice: 'Push-хабарлама қосу',
   open_color: 'Ашық',
   black_color: 'Қара',

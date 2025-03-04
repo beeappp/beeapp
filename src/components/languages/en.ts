@@ -110,6 +110,8 @@ export default {
   setting_help: 'Help and support',
   setting_about: 'About the app',
   log_out: 'Log out',
+  delete: 'Delete account',
+  confirm_delete: 'Delete',
   push_notice: 'Enable push notification',
   open_color: 'Light',
   black_color: 'Dark',

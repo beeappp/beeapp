@@ -29,6 +29,7 @@ const LevelGridIcon: React.FC<LevelGridProps> = ({
   ...props
 }) => {
   const currentColor = React.useMemo(() => {
+    return color;
     if (disabled) {
       return 'rgba(19, 20, 20, 0.25)';
     } else {

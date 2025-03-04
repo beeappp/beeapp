@@ -109,6 +109,8 @@ export default {
   setting_help: 'Помощь и поддержка',
   setting_about: 'О приложении',
   log_out: 'Выйти из аккаунта',
+  delete: 'Удалить аккаунт',
+  confirm_delete: 'Удалить',
   push_notice: 'Включить push-уведомление',
   open_color: 'Светлый',
   black_color: 'Темный',

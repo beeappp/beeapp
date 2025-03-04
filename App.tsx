@@ -17,6 +17,8 @@ import NetInfo from '@react-native-community/netinfo';
 //language init
 import './i18n';
 
+import { requestTrackingPermission } from 'react-native-tracking-transparency';
+
 //jotai
 import { useSetAtom } from 'jotai';
 import {
@@ -42,6 +44,19 @@ const App = () => {
 
     return status;
   }, [NetInfo]);
+
+  const requestATT = async () => {
+    const status = await requestTrackingPermission();
+    if (status === 'authorized') {
+      console.log('Tracking разрешен');
+    } else {
+      console.log('Tracking отклонен');
+    }
+  };
+
+  useEffect(() => {
+    requestATT();
+  }, []);
 
   return (
     <Provider store={store}>

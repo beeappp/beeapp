@@ -4,6 +4,7 @@ import { registerUser } from './registerUser';
 import { loginUser } from './loginUser';
 import { resendValidation } from './resendValidation';
 import { verifyCode } from './verifyCode';
+import { deleteUser } from './deleteUser';
 
 export const extraReducers = (builder: ActionReducerMapBuilder<UserState>) => {
   builder.addMatcher(
@@ -11,7 +12,8 @@ export const extraReducers = (builder: ActionReducerMapBuilder<UserState>) => {
       registerUser.pending,
       loginUser.pending,
       resendValidation.pending,
-      verifyCode.pending
+      verifyCode.pending,
+      deleteUser.pending
     ),
     state => {
       state.isLoading = true;
@@ -30,6 +32,9 @@ export const extraReducers = (builder: ActionReducerMapBuilder<UserState>) => {
   builder.addMatcher(isAnyOf(resendValidation.fulfilled), (state, action) => {
     state.isLoading = false;
   });
+  builder.addMatcher(isAnyOf(deleteUser.fulfilled), state => {
+    state.isLoading = false;
+  });
   builder.addMatcher(isAnyOf(verifyCode.fulfilled), (state, action) => {
     state.isLoading = false;
   });
@@ -39,7 +44,8 @@ export const extraReducers = (builder: ActionReducerMapBuilder<UserState>) => {
       registerUser.rejected,
       loginUser.rejected,
       resendValidation.rejected,
-      verifyCode.rejected
+      verifyCode.rejected,
+      deleteUser.rejected
     ),
     state => {
       state.isLoading = false;

@@ -3,10 +3,11 @@ import {
   ButtonText,
   FlatList,
   Text,
+  TrashIcon,
   View,
   VStack,
 } from '@gluestack-ui/themed';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Layout } from '../../navigator/Layout';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -39,6 +40,8 @@ import LogOutModal from '../../components/LogOutModal';
 import { Portal } from '@gorhom/portal';
 import { useSetAtom } from 'jotai';
 import { CoursesItemsAtom } from '../../tools/atoms/common';
+import SelectModal from '../../components/SelectModal';
+// import DeleteModal from '../../components/DeleteModal';
 
 type SettingsOption = {
   id: string;
@@ -52,16 +55,19 @@ const SettingsScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
-  const { logout } = useUser();
+  const { logout, deleteUser, currentUser } = useUser();
   const bottomSheetModalRef = useRef<BSModal>(null);
   const setCourse = useSetAtom(CoursesItemsAtom);
+  const [currentModal, setCurrentModal] = useState<
+    'delete' | 'exit' | 'reset' | null
+  >(null);
 
   const settingsOptions: SettingsOption[] = [
     {
       id: '1',
       icon: <PaymnetNoticeIcon />,
       label: t('notification'),
-      navigation: 'PaymentNotice',
+      // navigation: 'PaymentNotice',
     },
     {
       id: '2',
@@ -90,10 +96,27 @@ const SettingsScreen = () => {
     {
       id: '6',
       icon: <Coloricon />,
-      label: 'Прогресті өшіру ',
+      label: 'Прогресті өшіру',
     },
     {
       id: '7',
+      icon: (
+        <Box
+          width={30}
+          height={30}
+          justifyContent="center"
+          alignItems="center"
+          bgColor={'#434343'}
+          borderRadius={10}
+        >
+          <TrashIcon color={'$white'} size={'sm'} />
+        </Box>
+      ),
+      label: t('delete'),
+      // navigation: 'About',
+    },
+    {
+      id: '8',
       icon: <LogOutIcon />,
       label: t('log_out'),
       // navigation: 'About',
@@ -111,6 +134,18 @@ const SettingsScreen = () => {
     }
   };
 
+  const deleteAccount = async () => {
+    if (currentUser) {
+      try {
+        await deleteUser({ userId: currentUser.id });
+        logout();
+        close();
+      } catch (error) {
+        console.log('error', error);
+      }
+    }
+  };
+
   const exit = useCallback(() => {
     logout();
     close();
@@ -125,10 +160,15 @@ const SettingsScreen = () => {
     <TouchableOpacity
       style={styles.item}
       onPress={() => {
-        if (item.id === '7') {
+        if (item.id === '6') {
+          setCurrentModal('reset');
           open();
-        } else if (item.id === '6') {
-          setCourse({});
+        } else if (item.id === '7') {
+          setCurrentModal('delete');
+          open();
+        } else if (item.id === '8') {
+          setCurrentModal('exit');
+          open();
         } else {
           item.navigationLink
             ? Linking.openURL(item.navigationLink)
@@ -153,19 +193,20 @@ const SettingsScreen = () => {
         </VStack>
         <View style={styles.settingsContainer}>
           <VStack flex={1} pb={bottom + 75} justifyContent="space-between">
-            <VStack paddingHorizontal={10} marginTop={25} alignContent="center">
+            <VStack flex={1} paddingHorizontal={10} alignContent="center">
               <FlatList
                 data={settingsOptions}
                 keyExtractor={(item: any) => item.id}
                 renderItem={renderItem}
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
+                ListFooterComponent={() => <View style={styles.separator} />}
+                contentContainerStyle={{ paddingTop: 25 }}
               />
-              <View style={styles.separator} />
             </VStack>
             <View
               width={'100%'}
               alignItems="center"
-              marginBottom={Platform.OS == 'android' ? 40 : undefined}
+              marginBottom={Platform.OS == 'android' ? 40 : 20}
             >
               <BeeAppIcon />
             </View>
@@ -174,8 +215,35 @@ const SettingsScreen = () => {
       </VStack>
       <Portal>
         <BottomSheetModalProvider>
-          <BottomSheetModal modalRef={bottomSheetModalRef} modalHeight={250}>
-            <LogOutModal onPressTop={exit} onPressBottom={close} />
+          <BottomSheetModal modalRef={bottomSheetModalRef} modalHeight={300}>
+            {currentModal === 'exit' ? (
+              <SelectModal
+                title={t('log_out')}
+                buttonBottomText={t('no_stay')}
+                buttonTopText={t('yes_out')}
+                onPressTop={exit}
+                onPressBottom={close}
+              />
+            ) : currentModal === 'delete' ? (
+              <SelectModal
+                title={t('delete')}
+                buttonBottomText={t('no_stay')}
+                buttonTopText={t('confirm_delete')}
+                onPressTop={deleteAccount}
+                onPressBottom={close}
+              />
+            ) : (
+              <SelectModal
+                title={'Прогресті өшіру'}
+                buttonBottomText={t('no_stay')}
+                buttonTopText={t('confirm_delete')}
+                onPressTop={() => {
+                  setCourse({});
+                  close();
+                }}
+                onPressBottom={close}
+              />
+            )}
           </BottomSheetModal>
         </BottomSheetModalProvider>
       </Portal>

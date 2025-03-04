@@ -46,11 +46,11 @@ const PrivateNavigator = () => {
       }}
       initialRouteName="TabNavigator"
     >
-      <Stack.Screen
+      {/* <Stack.Screen
         name="PaymentNotice"
         component={PaymentNoticeScreen}
         options={{ ...noHeaderStyle, ...gestureDisabled }}
-      />
+      /> */}
       <Stack.Screen
         name="NotificationSetting"
         component={NotificationSettingScreen}

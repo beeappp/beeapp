@@ -5574,6 +5574,7 @@ __metadata:
     react-native-tab-view: ^3.5.2
     react-native-toast-message: ^2.2.1
     react-native-track-player: ^4.1.1
+    react-native-tracking-transparency: ^0.1.2
     react-native-video: ^6.5.0
     react-native-vimeo-iframe: ^1.2.1
     react-native-webview: 11.26.1
@@ -11470,6 +11471,16 @@ __metadata:
     shaka-player:
       optional: true
   checksum: df1e78d8bda18789a1d0d8118f5c676d10436397df3b20d87408e4abc5312a35613b348bc020b8aceb99e883745f68c915f897a26e798e230c0bfcaf491aeb8e
+  languageName: node
+  linkType: hard
+
+"react-native-tracking-transparency@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "react-native-tracking-transparency@npm:0.1.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 972706c14929c3c158cd47dc908ba1c448f482f64a9a1fb2087374b5fbc4124d54dd678de7094d6ad866a75415479e6a120d3cc7e39f338fee27ee214a4b902a
   languageName: node
   linkType: hard
 
