@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Button from '../Button/Button';
 import { palette } from '../../theme/palette';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import AcitveSoundIcon from '../../assets/icons/Sound/AcitveSoundIcon';
 import { useTranslation } from 'react-i18next';
 import { Question } from '../../store/exercise/types';
@@ -21,7 +21,9 @@ import TrackPlayer, {
   usePlaybackState,
   useTrackPlayerEvents,
 } from 'react-native-track-player';
-import YoutubePlayer from 'react-native-youtube-iframe';
+// import YoutubePlayer from 'react-native-youtube-iframe';
+import CustomVideoPlayer from '../VideoPlayer/VideoPlayer';
+import { VideoPlayerRef } from 'react-native-video-player';
 
 interface Props {
   questionItem: Question;
@@ -50,10 +52,8 @@ const MultipleChoiceAudio: FC<Props> = ({
     return questionItem.file_path;
   }, [questionItem.file_path]);
 
-  const youtubePath = useMemo(() => {
-    return questionType === 3
-      ? questionFilePath.replace('https://youtu.be/', '').split('?')[0]
-      : ' ';
+  const path = useMemo(() => {
+    return questionType === 3 ? questionFilePath : '';
   }, [questionType, questionFilePath]);
 
   const playbackState = usePlaybackState();
@@ -130,6 +130,8 @@ const MultipleChoiceAudio: FC<Props> = ({
     };
   }, []);
 
+  const playerRef = useRef<VideoPlayerRef>();
+
   return (
     <VStack
       width={'100%'}
@@ -158,14 +160,22 @@ const MultipleChoiceAudio: FC<Props> = ({
             <SoundIcon />
           )}
         </TouchableOpacity>
-      ) : questionType === 3 && youtubePath ? (
+      ) : questionType === 3 && path ? (
         <Box
           width={width - 40}
           height={220}
           overflow="hidden"
           borderRadius={20}
         >
-          <YoutubePlayer
+          <CustomVideoPlayer
+            controlsRef={playerRef}
+            width={'100%'}
+            height={'100%'}
+            videoUrl={path}
+            autoplay={false}
+            // fullSize
+          />
+          {/* <YoutubePlayer
             webViewStyle={{ right: 370 }}
             width={width + 700}
             height={220}
@@ -184,7 +194,7 @@ const MultipleChoiceAudio: FC<Props> = ({
           true;
         `,
             }}
-          />
+          /> */}
         </Box>
       ) : null}
 
@@ -223,7 +233,8 @@ const MultipleChoiceAudio: FC<Props> = ({
         bgColor={palette.white}
         borderColor={palette.white}
         textStyle={{ fontFamily: typography.medium, fontSize: 19 }}
-        onPress={() => {
+        onPress={async () => {
+          playerRef?.current?.pause?.();
           submitPress(selectedId);
         }}
       >

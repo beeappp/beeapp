@@ -5,7 +5,10 @@ import Animated, {
   runOnJS,
   useAnimatedProps,
   useAnimatedReaction,
+  useAnimatedStyle,
   useSharedValue,
+  withRepeat,
+  withSequence,
   withTiming,
 } from 'react-native-reanimated';
 import MicrophoneIcon from '../../assets/icons/Microphone/MicrophoneIcon';
@@ -62,10 +65,41 @@ const Recorder: React.FC<RecorderProps> = ({
     strokeDashoffset: CIRCLE_LENGTH * (1 - progress.value),
   }));
 
+  const size = useSharedValue(150);
+
+  useEffect(() => {
+    size.value = withRepeat(
+      withSequence(
+        withTiming(165, { duration: 1000, easing: Easing.inOut(Easing.quad) }),
+        withTiming(150, { duration: 1000, easing: Easing.inOut(Easing.quad) })
+      ),
+      -1,
+      true
+    );
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      width: size.value,
+      height: size.value,
+    };
+  });
+
   return (
     <View alignItems="center" justifyContent="center">
       <MicrophoneIcon />
 
+      <Animated.View
+        style={[
+          {
+            backgroundColor: 'rgba(255, 255, 255, 0.4)',
+            borderRadius: 100,
+            position: 'absolute',
+            zIndex: -1,
+          },
+          animatedStyle,
+        ]}
+      />
       <View position="absolute">
         <Svg width={108} height={108} fill="none">
           <Circle

@@ -1,4 +1,4 @@
-import { Box, FlatList, Text, View, VStack } from '@gluestack-ui/themed';
+import { Box, SectionList, Text, View, VStack } from '@gluestack-ui/themed';
 import React, { useMemo } from 'react';
 import { Layout } from '../../navigator/Layout';
 import { palette } from '../../theme/palette';
@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AppStackScreenProps } from '../../navigator/appNavigator';
 import { typography } from '../../theme/typography';
 import { useMainQuran } from '../../store/mainQuran';
-import { JuzsItem, Surah, SurahOfJuz } from '../../store/mainQuran/types';
+import { JuzsItem, SurahOfJuz } from '../../store/mainQuran/types';
 import JuzsSectionItem from '../../components/QuranItems/JuzsSectionItem';
 
 const platform = Platform.OS == 'android';
@@ -58,6 +58,18 @@ const ParalarScreen = () => {
     );
   };
 
+  const data = useMemo(() => {
+    return juzs.map(item => {
+      const data = item.surahs.map(e => {
+        return { ...e, juzId: item.id };
+      });
+      return {
+        data,
+        title: item.surahs.length ? `${item.id} пара` : null,
+      };
+    });
+  }, [juzs]);
+
   return (
     <View flex={1} bgColor={palette.lightDark2}>
       <View
@@ -74,16 +86,31 @@ const ParalarScreen = () => {
             // marginTop={20}
             paddingBottom={platform ? 60 : 0}
           >
-            <FlatList
+            <SectionList
               w={'100%'}
               mb={15}
-              data={juzs}
+              sections={data}
+              keyExtractor={(item, index) => item.surah_id + index}
               showsVerticalScrollIndicator={false}
-              renderItem={({ item, index }: { item: any; index: number }) => (
-                <JuzsListItem item={item} index={index} />
-              )}
-              keyExtractor={(_, i) => i.toString()}
               contentContainerStyle={styles.listContainer}
+              renderItem={({ item, index }) => (
+                <JuzsSectionItem
+                  key={`${item.surah_id}-${new Date().getTime()}`}
+                  item={item}
+                  index={index}
+                  juz_Id={item.juzId}
+                  surahIndex={index}
+                  surahCount={surahCount}
+                  onPress={readParaText}
+                />
+              )}
+              renderSectionHeader={({ section: { title } }) =>
+                title ? (
+                  <View marginVertical={10}>
+                    <Text style={styles.paraCountText}>{title}</Text>
+                  </View>
+                ) : null
+              }
             />
           </Box>
         </Layout>
@@ -93,7 +120,7 @@ const ParalarScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  listContainer: { paddingVertical: 20 },
+  listContainer: { paddingVertical: 20, paddingBottom: 50 },
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',

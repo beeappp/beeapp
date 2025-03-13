@@ -3974,6 +3974,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/slider@npm:^4.5.6":
+  version: 4.5.6
+  resolution: "@react-native-community/slider@npm:4.5.6"
+  checksum: 8287f3f69b63e0b313639d7dc9a45718a85c4c4494f78485695d7e80bcf3fa9d3891d05a557affc66306df5f2a0a9853d319a35ffcc875ae71149a38a2258bb8
+  languageName: node
+  linkType: hard
+
 "@react-native-masked-view/masked-view@npm:^0.3.1":
   version: 0.3.1
   resolution: "@react-native-masked-view/masked-view@npm:0.3.1"
@@ -5518,6 +5525,7 @@ __metadata:
     "@hookform/resolvers": ^3.9.0
     "@react-native-async-storage/async-storage": ^2.0.0
     "@react-native-community/netinfo": ^11.4.1
+    "@react-native-community/slider": ^4.5.6
     "@react-native-masked-view/masked-view": ^0.3.1
     "@react-native/babel-preset": 0.74.87
     "@react-native/eslint-config": 0.74.87
@@ -5575,7 +5583,8 @@ __metadata:
     react-native-toast-message: ^2.2.1
     react-native-track-player: ^4.1.1
     react-native-tracking-transparency: ^0.1.2
-    react-native-video: ^6.5.0
+    react-native-video: ^6.10.2
+    react-native-video-player: ^0.16.2
     react-native-vimeo-iframe: ^1.2.1
     react-native-webview: 11.26.1
     react-native-youtube-iframe: ^2.3.0
@@ -11484,13 +11493,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-video@npm:^6.5.0":
-  version: 6.6.2
-  resolution: "react-native-video@npm:6.6.2"
+"react-native-video-player@npm:^0.16.2":
+  version: 0.16.2
+  resolution: "react-native-video-player@npm:0.16.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: caa15860536203428dfd4715dcec484d6f07523d161ba7602c30fee49647adca9b5f86dbbf2eccb78336b2b81262ff606de18d0130903fdcce6f187972664510
+    react-native-video: ^6.8.0
+  checksum: 83b55832b69ccacf65e6cea6350fbef975cbe51e4c475230bc666f3ceb8afecd03b50d44f88213a0c1f4beb82633a9c729e2a235e9bfa71ffb2e4c04354900e1
+  languageName: node
+  linkType: hard
+
+"react-native-video@npm:^6.10.2":
+  version: 6.10.2
+  resolution: "react-native-video@npm:6.10.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: db03d894088997a2eb87ed831bc03da86989a95ab7b63c2d06a38f71d90571f58a2a7ae1490e3c41eb02cee6b3dcfa82a89874cc3f0abe0eda4e504282ad91fc
   languageName: node
   linkType: hard
 

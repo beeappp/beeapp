@@ -96,7 +96,7 @@ const SettingsScreen = () => {
     {
       id: '6',
       icon: <Coloricon />,
-      label: 'Прогресті өшіру',
+      label: t('resetProgressTitle'),
     },
     {
       id: '7',
@@ -215,28 +215,31 @@ const SettingsScreen = () => {
       </VStack>
       <Portal>
         <BottomSheetModalProvider>
-          <BottomSheetModal modalRef={bottomSheetModalRef} modalHeight={300}>
+          <BottomSheetModal modalRef={bottomSheetModalRef} modalHeight={325}>
             {currentModal === 'exit' ? (
               <SelectModal
                 title={t('log_out')}
-                buttonBottomText={t('no_stay')}
-                buttonTopText={t('yes_out')}
+                subtitle={t('exitText')}
+                buttonBottomText={t('addStay')}
+                buttonTopText={t('exitButton')}
                 onPressTop={exit}
                 onPressBottom={close}
               />
             ) : currentModal === 'delete' ? (
               <SelectModal
                 title={t('delete')}
-                buttonBottomText={t('no_stay')}
-                buttonTopText={t('confirm_delete')}
+                subtitle={t('deleteAccountText')}
+                buttonBottomText={t('goBack')}
+                buttonTopText={t('deleteAccountButton')}
                 onPressTop={deleteAccount}
                 onPressBottom={close}
               />
             ) : (
               <SelectModal
-                title={'Прогресті өшіру'}
-                buttonBottomText={t('no_stay')}
-                buttonTopText={t('confirm_delete')}
+                title={t('resetProgressTitle')}
+                subtitle={t('resetProgressText')}
+                buttonBottomText={t('goBack')}
+                buttonTopText={t('resetProgressButton')}
                 onPressTop={() => {
                   setCourse({});
                   close();

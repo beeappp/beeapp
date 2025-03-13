@@ -1,4 +1,4 @@
-import { Pressable, Spinner, View, VStack } from '@gluestack-ui/themed';
+import { View, VStack } from '@gluestack-ui/themed';
 import React, {
   useCallback,
   useEffect,
@@ -16,7 +16,10 @@ import Text from '../../components/Text/Text';
 import { palette } from '../../theme/palette';
 import { typography } from '../../theme/typography';
 import AudioRecorder from '../../components/AudioRecord';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import {
   BottomSheetModal as BSModal,
   BottomSheetModalProvider,
@@ -27,20 +30,20 @@ import { HomeScreenProps } from '../../navigator/homeStackNavigator';
 import { useLessons } from '../../store/lesson';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Alert, Dimensions, Platform, TouchableOpacity } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
 import { styles } from './styles';
 import { check, PERMISSIONS } from 'react-native-permissions';
 import { requestPermissions } from '../../utils/requestAudioPermission';
 import { useTranslation } from 'react-i18next';
 
-import YoutubePlayer from 'react-native-youtube-iframe';
+// import YoutubePlayer from 'react-native-youtube-iframe';
 import CorrectRecordIcon from '../../assets/icons/CorrectRecordicon/CorrectrecordIcon';
 import { useExercises } from '../../store/exercise';
 import { useAtom } from 'jotai';
 import { CoursesItemsAtom } from '../../tools/atoms/common';
 
-const { width, height } = Dimensions.get('window');
+import CustomVideoPlayer from '../../components/VideoPlayer/VideoPlayer';
 
 const android = Platform.OS == 'android';
 
@@ -69,9 +72,7 @@ const VideoLessonScreen = () => {
     return lessonsByCourseId && lessonsByCourseId[0]
       ? {
           ...lessonsByCourseId[0],
-          file_path: lessonsByCourseId[0].file_path
-            .replace('https://youtube.com/shorts/', '')
-            .split('?')[0],
+          file_path: lessonsByCourseId[0].file_path || '',
         }
       : null;
   }, [lessonsByCourseId]);
@@ -88,7 +89,6 @@ const VideoLessonScreen = () => {
   const AudioRecord = AudioRecorder();
 
   const [typeModal, setTypeModal] = useState<0 | 1 | 2>(0);
-  const [playing, setPlaying] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [currentTime, setCurrentTime] = useState('00:00');
@@ -98,30 +98,46 @@ const VideoLessonScreen = () => {
 
   const [courses, setCourse] = useAtom(CoursesItemsAtom);
 
-  const isLooped = useMemo(() => loopCount > 0, [loopCount]);
-
   const init = async () => {
     if (Platform.OS === 'android') {
       const res = await check(PERMISSIONS.ANDROID.RECORD_AUDIO);
-      if (res == 'granted' && !playing) {
-        togglePlaying();
-      } else await requestPermissions();
+      if (res == 'granted') {
+        setInitialized(true);
+        setTimeout(() => {
+          resume();
+        }, 100);
+      } else {
+        await requestPermissions().then(() => {
+          setInitialized(true);
+          setTimeout(() => {
+            resume();
+          }, 100);
+        });
+      }
     } else {
       const res = await check(PERMISSIONS.IOS.MICROPHONE);
       if (res == 'blocked')
         Alert.alert(
           'Микрофон рұқсаты қабылданбады. Құрылғы параметрлеріне өтіп, рұқсатты қолмен беріңіз.'
         );
-      if (res == 'granted' && !playing) {
-        togglePlaying();
-      } else await requestPermissions();
+      if (res == 'granted') {
+        setInitialized(true);
+        setTimeout(() => {
+          resume();
+        }, 100);
+      } else {
+        await requestPermissions().then(() => {
+          setInitialized(true);
+          setTimeout(() => {
+            resume();
+          }, 100);
+        });
+      }
     }
   };
 
   useEffect(() => {
-    if (!initialized) {
-      init();
-    }
+    init();
   }, []);
 
   const open = () => {
@@ -135,26 +151,15 @@ const VideoLessonScreen = () => {
     }
   };
 
-  const diff = useMemo(() => {
-    if (currentTimecodeIndex >= timecodes.length) {
-      return 0;
-    }
-    return (
-      (convertSecond(timecodes[currentTimecodeIndex].end_duration) -
-        convertSecond(timecodes[currentTimecodeIndex].duration)) *
-      1000
-    );
-  }, [timecodes, currentTimecodeIndex]);
-
   const handleRewind = async (time: number) => {
-    await playerRef.current?.seekTo(time);
+    await playerRef.current?.seek(time);
+    await playerRef.current?.resume(time);
   };
 
   const checkAudio = useCallback(
     async (audio64: string, sampleRate: string | null) => {
       setIsLoading(true);
       try {
-        togglePlaying();
         setIsRecording(false);
         const data = await checkLesson({
           resource_id: timecodes[currentTimecodeIndex].id || 0,
@@ -208,6 +213,10 @@ const VideoLessonScreen = () => {
     }
   }, []);
 
+  const onEnd = () => {
+    correctAnswerModal();
+  };
+
   const exitVideoLesson = useCallback(() => {
     setTypeModal(1);
     open();
@@ -218,67 +227,11 @@ const VideoLessonScreen = () => {
     open();
   }, []);
 
-  const onStateChange = useCallback((state: any) => {
-    if (!initialized && state === 'playing') {
-      setInitialized(true);
-    }
-    if (state === 'ended') {
-      correctAnswerModal();
-      setPlaying(false);
-    }
-  }, []);
-
-  const togglePlaying = useCallback(() => {
-    setPlaying(prev => !prev);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (playerRef.current) {
-        const elapsed_sec = await playerRef.current?.getCurrentTime();
-        const elapsed_ms = Math.floor(elapsed_sec * 1000);
-        // const ms = elapsed_ms % 1000;
-        const min = Math.floor(elapsed_ms / 60000);
-        const seconds = Math.floor((elapsed_ms - min * 60000) / 1000);
-
-        const startRecord =
-          timecodes[currentTimecodeIndex].duration ===
-          `00:${min.toString().padStart(2, '0')}:${seconds
-            .toString()
-            .padStart(2, '0')}`;
-
-        if (startRecord) {
-          setIsRecording(true);
-          console.log('startRecord', timecodes[currentTimecodeIndex].duration);
-        }
-
-        const fullTime =
-          min.toString().padStart(2, '0') +
-          ':' +
-          seconds.toString().padStart(2, '0');
-
-        setCurrentTime(fullTime);
-      }
-    }, 1000); // 1000ms
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [
-    timecodes,
-    currentTimecodeIndex,
-    setCurrentTimecodeIndex,
-    loopCount,
-    isRecording,
-    isCorrect,
-    isLooped,
-  ]);
-
   const modalData = useMemo(() => {
     return {
       0: {
         title: 'video_nextHeader',
-        description: '',
+        description: 'video_description',
         topButtonText: 'video_nextBack',
         topButtonFunc: () => navigation.navigate('HomeStack'),
         topButtonDisabled: false,
@@ -291,6 +244,7 @@ const VideoLessonScreen = () => {
             }
           } catch (e) {
             console.log('Error ', e);
+            playerRef.current?.pause?.();
             navigation.goBack();
           }
         },
@@ -305,21 +259,25 @@ const VideoLessonScreen = () => {
         topButtonFunc: close,
         topButtonDisabled: false,
         bottomButtonText: 'video_stay',
-        bottomButtonFunc: () => navigation.goBack(),
+        bottomButtonFunc: () => {
+          playerRef.current?.pause?.();
+          navigation.goBack();
+        },
         bottomButtonDisabled: false,
         optionalButtonText: '',
         optionalButtonFunc: () => {},
       },
       2: {
-        title: !isCorrect ? 'wrongAnswer' : 'correctAnswer',
-        description: loopCount >= 3 ? 'tryLater' : '',
+        title: !isCorrect ? 'good' : 'correctAnswer',
+        description:
+          !isCorrect && loopCount >= 3 ? 'tryLater' : 'retrySubTitle',
         topButtonText: 'tryAgain',
         topButtonFunc: async () => {
           setLoopCount(prev => prev + 1);
           await handleRewind(
             convertSecond(timecodes[currentTimecodeIndex].duration) - 1
           );
-          togglePlaying();
+          resume();
           close();
         },
         topButtonDisabled: loopCount >= 3 || !!isCorrect,
@@ -327,7 +285,7 @@ const VideoLessonScreen = () => {
         bottomButtonFunc: () => {
           setCurrentTimecodeIndex(prev => prev + 1);
           setLoopCount(0);
-          togglePlaying();
+          resume();
           close();
         },
         bottomButtonDisabled: isCorrect ? false : loopCount < 3,
@@ -337,7 +295,43 @@ const VideoLessonScreen = () => {
         // optionalButtonFunc: () => navigation.goBack(),
       },
     };
-  }, [loopCount, isCorrect]);
+  }, [loopCount, isCorrect, playerRef.current]);
+
+  const resume = () => {
+    if (playerRef.current) {
+      playerRef.current.resume();
+    }
+  };
+
+  const pause = () => {
+    if (playerRef.current) {
+      playerRef.current?.pause?.();
+    }
+  };
+
+  const handleProgress = (data: { currentTime: number }) => {
+    const elapsed_ms = Math.floor(data.currentTime * 1000);
+    const min = Math.floor(elapsed_ms / 60000);
+    const seconds = Math.floor((elapsed_ms - min * 60000) / 1000);
+    const fullTime =
+      min.toString().padStart(2, '0') +
+      ':' +
+      seconds.toString().padStart(2, '0');
+
+    setCurrentTime(fullTime);
+
+    const startRecord =
+      timecodes[currentTimecodeIndex]?.duration ===
+      `00:${min.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}`;
+
+    if (startRecord) {
+      pause();
+      setIsRecording(true);
+    }
+  };
+  console.log('currentLesson', currentLesson);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -349,71 +343,31 @@ const VideoLessonScreen = () => {
                 <TabHeader
                   variant={'withBackIconVideo'}
                   headerScreenTitle={currentLesson?.text}
-                  title={currentTime}
+                  title={String(currentTime)}
                   titleColor={palette.greyScale9}
                   onPress={exitVideoLesson}
                   headerStyle={{ paddingHorizontal: 21, marginTop: top }}
                 />
               </View>
-
-              <>
-                {!initialized ? (
-                  <View
-                    style={{
-                      position: 'absolute',
-                      zIndex: 3,
-                      width: '100%',
-                      height: '100%',
-                      backgroundColor: 'black',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Spinner color={'white'} size={'large'} />
-                  </View>
-                ) : null}
-                <View
-                  style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    zIndex: 2,
-                  }}
-                >
-                  <Pressable
-                    style={{ width: '100%', height: '100%' }}
-                    onPress={togglePlaying}
-                    disabled={isRecording || isLooped}
-                  />
-                </View>
-                <View style={{ position: 'absolute', top: -75 }}>
-                  <YoutubePlayer
-                    ref={playerRef}
-                    width={width}
-                    height={height + 150}
-                    play={playing}
-                    videoId={currentLesson?.file_path}
-                    onChangeState={onStateChange}
-                    initialPlayerParams={{
-                      controls: false,
-                    }}
-                    webViewProps={{
-                      injectedJavaScript: `
-                        var element = document.getElementsByClassName('container')[0];
-                        element.style.position = 'unset';
-                        true;
-                      `,
-                    }}
-                  />
-                </View>
-              </>
+              {initialized ? (
+                <CustomVideoPlayer
+                  videoUrl={currentLesson?.file_path}
+                  fullSize
+                  controlsBottom={50}
+                  onProgress={handleProgress}
+                  onEnd={onEnd}
+                  controlsRef={playerRef}
+                  disabledLayout={isRecording}
+                  autoplay={false}
+                />
+              ) : null}
               <VStack style={styles.icon}>
                 {isRecording && !isLoading ? (
                   <Recorder
                     stopRecording={checkAudio}
                     startedRecord={AudioRecord.onStartRecord}
                     stopRecord={AudioRecord.onStopRecord}
-                    recordDuration={diff}
+                    recordDuration={10000}
                   />
                 ) : null}
                 {!isRecording && isLoading ? (

@@ -59,7 +59,7 @@ const ClassLevelsScreen = () => {
     let halfLock = false;
     let finished = false;
     const currentFinishedCourse = finishedCourses[item.id];
-    console.log('currentFinishedCourse', currentFinishedCourse);
+
     const prevFinishedCourse = index && finishedCourses[state[index - 1].id];
 
     if (currentFinishedCourse) {
@@ -84,7 +84,7 @@ const ClassLevelsScreen = () => {
         disabled = false;
       }
     }
-    console.log('halfLock', halfLock);
+
     return (
       <LevelGridItem
         item={item}

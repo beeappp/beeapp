@@ -8,6 +8,7 @@ import React, { FC } from 'react';
 
 interface Props {
   title: string;
+  subtitle?: string;
   buttonTopText: string;
   buttonBottomText: string;
   onPressTop: () => void;
@@ -22,11 +23,22 @@ const SelectModal: FC<Props> = ({
   buttonTopText,
   buttonBottomText,
   title,
+  subtitle,
 }) => {
   return (
     <View style={styles.container}>
       <VStack style={styles.headerContainer}>
         <Text style={styles.headerText}>{title}</Text>
+        <Text
+          style={[
+            styles.text,
+            {
+              fontFamily: typography.light,
+            },
+          ]}
+        >
+          {subtitle}
+        </Text>
       </VStack>
       <VStack style={styles.buttonContainer}>
         <Button
@@ -57,11 +69,12 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'flex-start',
     marginTop: android ? 0 : 10,
+    gap: 5,
   },
   buttonContainer: {
     width: '100%',
     gap: 10,
-    marginTop: android ? 10 : 30,
+    marginTop: android ? 10 : 20,
   },
   headerText: {
     fontFamily: typography.medium,

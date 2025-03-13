@@ -48,7 +48,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Give $(PRODUCT_NAME) permission to use your camera.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Give $(PRODUCT_NAME) permission to use your microphone.</string>
+	<string>$(PRODUCT_NAME) uses the microphone to assess your pronunciation and provide feedback during lessons. The microphone is only activated when you participate in speaking exercises.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SF-Pro-Display-Bold.otf</string>

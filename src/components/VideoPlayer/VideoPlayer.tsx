@@ -1,100 +1,342 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Center, View } from '@gluestack-ui/themed';
-import { Dimensions, TouchableOpacity } from 'react-native';
-import Video, { VideoRef } from 'react-native-video';
-import { useNavigation } from '@react-navigation/native';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import { Spinner, View } from '@gluestack-ui/themed';
+import {
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 
-// styles
-import styles from './styles';
-
-// tools
-
-// theme
-import { palette } from '../../theme/palette';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 
 //components
 import Text from '../Text/Text';
-import VideoIcon from '../../assets/icons/VideoIcon/Videoicon';
-import PauseIcon from '../../assets/icons/PauseIcon/PauseIcon';
+import { VideoPlayerRef } from 'react-native-video-player';
 
-// assets
+import Slider from '@react-native-community/slider';
+import Video, {
+  OnLoadData,
+  OnPlaybackStateChangedData,
+  OnProgressData,
+  ResizeMode,
+} from 'react-native-video';
+import PlayPauseIcon from '../../assets/icons/VideoControl/PlayPauseIcon';
+import RewindIcon from '../../assets/icons/VideoControl/RewindIcon';
+import FastForwardIcon from '../../assets/icons/VideoControl/FastForwardIcon';
+import PauseIcon from '../../assets/icons/VideoControl/PauseIcon';
+import { DimensionValue } from 'react-native';
 
-const { width } = Dimensions.get('window');
+const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 
 interface PlayerProps {
-  videoID?: string;
-  disabled?: boolean;
-  // onEndVideo: () => void;
+  videoUrl?: string;
+  resizeMode?: ResizeMode;
+  onProgress?: (event: OnProgressData) => void;
+  onEnd?: () => void;
+  fullSize?: boolean;
+  width?: DimensionValue;
+  height?: DimensionValue;
+  controlsBottom?: number;
+  thumbnailUrl?: string;
+  endWithThumbnail?: boolean;
+  autoplay?: boolean;
+  disabledLayout?: boolean;
+  controlsRef?: any;
+  onPlaybackStateChanged?: (e: OnPlaybackStateChangedData) => void;
 }
 
-const VideoPlayer: FC<PlayerProps> = ({ videoID, disabled }) => {
-  const videoRef = useRef<VideoRef>(null);
+const CustomVideoPlayer: FC<PlayerProps> = ({
+  videoUrl,
+  onProgress,
+  onEnd,
+  resizeMode = ResizeMode.COVER,
+  fullSize,
+  width,
+  height,
+  controlsBottom,
+  autoplay = true,
+  disabledLayout,
+  controlsRef,
+  onPlaybackStateChanged,
+}) => {
+  const playerRef = useRef<VideoPlayerRef>(null);
 
-  const [isPaused, setIsPaused] = useState(false);
+  const [duration, setDuration] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [initialized, setInitialized] = useState(false);
 
-  const onLoad = useCallback(async () => {
-    setTimeout(() => {
-      setIsPaused(true);
-    }, 500);
-  }, []);
+  const opacity = useSharedValue(0);
 
-  const onEnd = useCallback(async () => {
-    setTimeout(() => {
-      // onEndVideo();
-    }, 500);
-  }, []);
+  const timeoutId = useRef<NodeJS.Timeout | null>(null);
+
+  const resume = () => {
+    if (playerRef.current) {
+      playerRef.current?.resume?.();
+    }
+  };
+
+  const pause = () => {
+    if (playerRef.current) {
+      playerRef.current?.pause?.();
+    }
+  };
+
+  useEffect(() => {
+    if (playerRef.current) {
+      controlsRef.current = playerRef.current;
+    }
+  }, [playerRef.current]);
+
+  const onLoad = (e: OnLoadData) => {
+    setDuration(e.duration);
+    setInitialized(true);
+  };
+
+  const handlePlayPause = () => {
+    if (isPlaying) {
+      pause();
+    } else {
+      resume();
+    }
+  };
+
+  const handleProgress = (data: OnProgressData) => {
+    setCurrentTime(data.currentTime);
+    if (onProgress) {
+      onProgress(data);
+    }
+  };
+
+  const handleSeek = (time: number) => {
+    if (playerRef.current) {
+      playerRef.current?.seek(time);
+      setCurrentTime(time);
+    }
+  };
+
+  const handleRewind = () => {
+    const time = Math.max(0, currentTime - 5);
+    handleSeek(time);
+  };
+
+  const handleForward = () => {
+    const time = Math.min(duration, currentTime + 5);
+    handleSeek(time);
+  };
+
+  const resetOpacity = () => {
+    opacity.value = withTiming(0, { duration: 200 });
+  };
+
+  const handlePressIn = async () => {
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current);
+      timeoutId.current = null;
+    }
+    if (!disabledLayout) {
+      opacity.value = withTiming(1, { duration: 200 });
+    }
+  };
+
+  const handlePressOut = async () => {
+    timeoutId.current = setTimeout(() => {
+      resetOpacity();
+    }, 3000);
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
   return (
-    <View pointerEvents={disabled ? 'none' : 'auto'}>
-      {isPlaying ? (
-        <View borderRadius={20} overflow={'hidden'}>
-          <Video
-            onLoad={onLoad}
-            onTouchStart={() => setIsPaused(prev => !prev)}
-            paused={isPaused}
-            source={{
-              uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
-            }}
-            ref={videoRef}
-            onEnd={onEnd}
-            onError={e => console.log('Error:', e)}
-            style={styles.backgroundVideo}
-          />
-
-          {isPaused && (
-            <TouchableOpacity
-              onPress={() => setIsPaused(prev => !prev)}
-              style={{
-                position: 'absolute',
-                top: '45%',
-                bottom: '50%',
-                alignSelf: 'center',
-              }}
-            >
-              <PauseIcon />
-            </TouchableOpacity>
-          )}
+    <>
+      {!initialized ? (
+        <View
+          style={{
+            position: 'absolute',
+            zIndex: 3,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'black',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Spinner color={'white'} size={'large'} />
         </View>
-      ) : (
-        <Center width={'$full'} mb={20}>
-          <TouchableOpacity onPress={() => setIsPlaying(prev => !prev)}>
-            <VideoIcon />
-            <TouchableOpacity
-              onPress={() => setIsPaused(prev => !prev)}
-              style={{
+      ) : null}
+      <Pressable
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        style={[
+          { zIndex: 0, height, width },
+          fullSize && {
+            width: windowWidth,
+            height: windowHeight,
+          },
+        ]}
+        disabled={false}
+      >
+        <View pointerEvents="none">
+          <Video
+            ref={playerRef}
+            paused={!autoplay}
+            source={{
+              uri: videoUrl,
+            }}
+            onLoad={onLoad}
+            onProgress={handleProgress}
+            onEnd={onEnd}
+            onError={e => console.log('eer', e)}
+            onPlaybackStateChanged={e => {
+              setIsPlaying(e.isPlaying);
+              onPlaybackStateChanged?.(e);
+            }}
+            style={[
+              {
+                height,
+                width,
+              },
+              fullSize && {
+                width: width || windowWidth,
+                height: height || windowHeight,
+              },
+            ]}
+            resizeMode={resizeMode}
+            controlsStyles={{ hideFullscreen: true }}
+            // customStyles={{
+            //   controls: { display: 'none' },
+            //   seekBar: { display: 'none' },
+            // }}
+          />
+          <Animated.View
+            style={[
+              {
+                width: width || '100%',
+                height: height || '100%',
                 position: 'absolute',
-                top: '40%',
-                bottom: '15%',
-                alignSelf: 'center',
+                zIndex: 1,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+              },
+              animatedStyle,
+              fullSize && {
+                width: width || windowWidth,
+                height: height || windowHeight,
+              },
+            ]}
+          />
+        </View>
+        <Animated.View
+          style={[
+            styles.controls,
+            !!controlsBottom && { bottom: controlsBottom },
+            animatedStyle,
+          ]}
+          pointerEvents="box-none"
+        >
+          <View style={styles.controlRow}>
+            <TouchableOpacity
+              onPressIn={() => {
+                handlePressIn().then(() => {
+                  handleRewind();
+                });
               }}
+              onPressOut={handlePressOut}
+              style={styles.controlButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <PauseIcon />
+              <View>
+                <Text style={styles.buttonText}>
+                  <RewindIcon />
+                </Text>
+              </View>
             </TouchableOpacity>
-          </TouchableOpacity>
-        </Center>
-      )}
-    </View>
+
+            <TouchableOpacity
+              onPressIn={() => {
+                handlePressIn().then(() => {
+                  handlePlayPause();
+                });
+              }}
+              onPressOut={handlePressOut}
+              style={styles.controlButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              {!isPlaying ? <PlayPauseIcon /> : <PauseIcon />}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPressIn={() => {
+                handlePressIn().then(() => {
+                  handleForward();
+                });
+              }}
+              onPressOut={handlePressOut}
+              style={styles.controlButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={styles.buttonText}>
+                <FastForwardIcon />
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <Slider
+            style={[styles.progressBar]}
+            minimumValue={0}
+            maximumValue={duration}
+            value={currentTime}
+            onSlidingStart={handlePressIn}
+            onSlidingComplete={e => {
+              handlePressOut().then(() => {
+                handleSeek(e);
+              });
+            }}
+            minimumTrackTintColor="white"
+            maximumTrackTintColor="gray"
+          />
+        </Animated.View>
+      </Pressable>
+    </>
   );
 };
-export default VideoPlayer;
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', backgroundColor: 'black' },
+  videoContainer: { flex: 1, justifyContent: 'center' },
+  video: { width: '100%', height: '100%' },
+  controls: {
+    position: 'absolute',
+    bottom: 0,
+    left: 10,
+    right: 10,
+    borderRadius: 10,
+    padding: 10,
+    paddingHorizontal: 50,
+    alignItems: 'center',
+    zIndex: 99,
+  },
+  controlRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    gap: 30,
+  },
+  controlButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 40,
+    height: 40,
+  },
+  buttonText: { fontSize: 18, color: 'white' },
+  progressBar: { width: '100%', height: 40 },
+  timeText: { color: 'white', textAlign: 'center', marginTop: 5 },
+});
+
+export default CustomVideoPlayer;

@@ -43,7 +43,7 @@ export default {
 
   //Home
   hello: 'Ассалаумағалейкум',
-  tadzhuid: 'Тәжиуд ойыны',
+  tadzhuid: 'Тәжуид ойыны',
   last_lesson: 'Тоқтаған сабағыңыз',
   quran_read: 'Құран оқу',
   last_read: 'Соңғы оқылған',
@@ -51,15 +51,16 @@ export default {
   ayiat: 'аят',
 
   //ClassLevels Screen
-  watch_video: 'Видео-сабақ қарау',
-  do_exercise: 'Жаттығу орыңдау',
+  watch_video: 'Видео-сабақты қарау',
+  do_exercise: 'Жаттығу орындау',
 
   //VideoLesson Screen
   video_exitHeader: 'Шыққыңыз келеди ме?',
   video_exitText: 'Шықсаңыз, прогрессіңіз жоғалады',
   video_exit: 'Жоқ, жалғастыру',
   video_stay: 'Шығу',
-  video_nextHeader: 'Сабақ аяқталды,\nжаттығуға көшсеңіз болады',
+  video_nextHeader: 'Жарайсыз! Тамаша нәтиже!',
+  video_description: 'Сабақ аяқталды, енді жаттығу жасап көрсеңіз болады.',
   video_nextBack: 'Басты бетке оралу',
   video_toExercise: 'Жаттығуға көшу',
 
@@ -109,7 +110,7 @@ export default {
   setting_help: 'Көмек және қолдау',
   setting_about: 'Қосымша туралы',
   log_out: 'Аккаунттан шығу',
-  delete: 'Аккаунтты өшіру',
+  delete: 'Аккаунтты жою',
   confirm_delete: 'Өшіру',
   push_notice: 'Push-хабарлама қосу',
   open_color: 'Ашық',
@@ -120,6 +121,20 @@ export default {
   no_stay: 'Қалу',
   wrongAnswer: 'Кате',
   correctAnswer: 'Дұрыс',
-  tryAgain: 'Қайтадан байқап көріңіз',
+  good: 'Жақсы',
+  retrySubTitle: 'Сәл түзетіп, тағы бір рет айтып көрейік.',
+  tryAgain: 'Қайта айту',
   tryLater: 'Кейінірек қайталап көріңіз',
+  resetProgressTitle: 'Прогресті өшіру',
+  resetProgressText:
+    'Егер сіз прогресті өшірсеңіз, өткен сабақтар мен тапсырмалар жойылады.',
+  resetProgressButton: 'Прогрессті өшіру',
+  goBack: 'Артқа қайту',
+  deleteAccountText:
+    'Егер сіз аккаунтыңызды жойсаңыз, қосымшаға қайта кіру үшін жаңа аккаунт тіркеу қажет болады.',
+  deleteAccountButton: 'Аккаунтымды жою',
+  exitButton: 'Иә, шығу',
+  exitText:
+    'Егер сіз аккаунттан шықсаңыз, қайта кіру үшін логин мен құпиясөз енгізу қажет болады.',
+  addStay: 'Қосымшада қалу',
 };
