@@ -217,7 +217,7 @@ const ClassLevelsScreen = () => {
                   >
                     {state[currentCourse].title}
                   </Text>
-                  <Text
+                  {/* <Text
                     color={palette.lightDark}
                     style={{
                       fontFamily: typography.regular,
@@ -226,7 +226,7 @@ const ClassLevelsScreen = () => {
                     }}
                   >
                     {state[currentCourse].description}
-                  </Text>
+                  </Text> */}
                 </VStack>
                 <VStack width={'100%'} gap={7} mt={30}>
                   <Button

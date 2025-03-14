@@ -133,13 +133,18 @@ const CustomVideoPlayer: FC<PlayerProps> = ({
     opacity.value = withTiming(0, { duration: 200 });
   };
 
-  const handlePressIn = async () => {
+  const handlePressIn = async ({ force }: { force?: boolean }) => {
     if (timeoutId.current) {
       clearTimeout(timeoutId.current);
       timeoutId.current = null;
     }
-    if (!disabledLayout) {
-      opacity.value = withTiming(1, { duration: 200 });
+    if (opacity.value && force) {
+      console.log('force', force);
+      resetOpacity();
+    } else {
+      if (!disabledLayout) {
+        opacity.value = withTiming(1, { duration: 200 });
+      }
     }
   };
 
@@ -171,7 +176,9 @@ const CustomVideoPlayer: FC<PlayerProps> = ({
         </View>
       ) : null}
       <Pressable
-        onPressIn={handlePressIn}
+        onPressIn={() => {
+          handlePressIn({ force: true });
+        }}
         onPressOut={handlePressOut}
         style={[
           { zIndex: 0, height, width },
@@ -242,7 +249,7 @@ const CustomVideoPlayer: FC<PlayerProps> = ({
           <View style={styles.controlRow}>
             <TouchableOpacity
               onPressIn={() => {
-                handlePressIn().then(() => {
+                handlePressIn({}).then(() => {
                   handleRewind();
                 });
               }}
@@ -259,7 +266,7 @@ const CustomVideoPlayer: FC<PlayerProps> = ({
 
             <TouchableOpacity
               onPressIn={() => {
-                handlePressIn().then(() => {
+                handlePressIn({}).then(() => {
                   handlePlayPause();
                 });
               }}
@@ -272,7 +279,7 @@ const CustomVideoPlayer: FC<PlayerProps> = ({
 
             <TouchableOpacity
               onPressIn={() => {
-                handlePressIn().then(() => {
+                handlePressIn({}).then(() => {
                   handleForward();
                 });
               }}
@@ -291,7 +298,7 @@ const CustomVideoPlayer: FC<PlayerProps> = ({
             minimumValue={0}
             maximumValue={duration}
             value={currentTime}
-            onSlidingStart={handlePressIn}
+            onSlidingStart={() => handlePressIn({})}
             onSlidingComplete={e => {
               handlePressOut().then(() => {
                 handleSeek(e);

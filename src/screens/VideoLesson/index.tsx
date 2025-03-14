@@ -326,10 +326,10 @@ const VideoLessonScreen = () => {
         .toString()
         .padStart(2, '0')}`;
 
-    if (startRecord) {
-      pause();
-      setIsRecording(true);
-    }
+    // if (startRecord) {
+    //   pause();
+    //   setIsRecording(true);
+    // }
   };
   console.log('currentLesson', currentLesson);
 

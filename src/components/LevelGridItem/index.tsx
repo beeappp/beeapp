@@ -106,25 +106,31 @@ const LevelGridItem: FC<Props> = ({
               {published ? (
                 <View width={'100%'}>
                   {renderBackgroundContent(backgroundLayout[index % 4])}
-                  <Pressable
-                    onPress={() => {
-                      if (disabled) {
-                        setIsVisible(true);
-                      } else {
-                        setChoseClass(`${id}`);
-                        PickingClass(index);
-                      }
-                    }}
-                  >
-                    <LevelGridIcon
-                      disabled={disabled}
-                      color={color || '#8CC14A'}
-                      index={number}
-                      halfLock={halfLock} //halflock
-                      image={image_path}
-                      finished={finished}
-                    />
-                  </Pressable>
+                  <View justifyContent="center" alignItems="center">
+                    <Pressable
+                      onPress={() => {
+                        if (disabled) {
+                          setIsVisible(true);
+                        } else {
+                          setChoseClass(`${id}`);
+                          PickingClass(index);
+                        }
+                      }}
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <LevelGridIcon
+                        disabled={disabled}
+                        color={color || '#8CC14A'}
+                        index={number}
+                        halfLock={halfLock} //halflock
+                        image={image_path}
+                        finished={finished}
+                      />
+                    </Pressable>
+                  </View>
                 </View>
               ) : (
                 <View width={'100%'}>
@@ -168,12 +174,15 @@ const LevelGridItem: FC<Props> = ({
               />
             </View>
             <VStack style={styles.headerContainer}>
-              <Text style={styles.headerText}>Cіздің Room-ыңыз дайын</Text>
+              <Text style={styles.headerText}>
+                Бұл раунд әлі қолжетімді емес
+              </Text>
               <Text style={styles.text}>
-                {'Room-ға өтіп, Speaking cессияны\n бастасаңыз болады'}
+                {'Оны ашу үшін алдыңғы раундты аяқтаңыз'}
               </Text>
             </VStack>
             <Button
+              textStyle={{ fontSize: 22 }}
               onPress={() => {
                 setIsVisible(false);
               }}
@@ -197,6 +206,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontFamily: typography.medium,
     fontSize: 20,
+    textAlign: 'center',
     color: palette.lightDark,
   },
   text: {

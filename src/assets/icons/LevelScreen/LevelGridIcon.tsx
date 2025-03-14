@@ -28,6 +28,10 @@ const LevelGridIcon: React.FC<LevelGridProps> = ({
   finished,
   ...props
 }) => {
+  const imagePath = image
+    ? image.replace('www.dropbox.com', 'dl.dropboxusercontent.com')
+    : '';
+
   const currentColor = React.useMemo(() => {
     return color;
     if (disabled) {
@@ -38,7 +42,7 @@ const LevelGridIcon: React.FC<LevelGridProps> = ({
   }, [color, disabled]);
 
   return (
-    <View justifyContent="center" alignItems="center">
+    <>
       <Svg width={111} height={122} fill="none" {...props}>
         <Path
           fill={logo ? palette.brownGrey : currentColor}
@@ -56,7 +60,7 @@ const LevelGridIcon: React.FC<LevelGridProps> = ({
           <View w={70} h={70} justifyContent="center" alignItems="center">
             <FastImage
               source={{
-                uri: image,
+                uri: imagePath,
                 priority: FastImage.priority.high,
               }}
               style={{ width: '100%', height: '100%' }}
@@ -77,7 +81,7 @@ const LevelGridIcon: React.FC<LevelGridProps> = ({
           </View>
         </VStack>
       )}
-    </View>
+    </>
   );
 };
 export default LevelGridIcon;
