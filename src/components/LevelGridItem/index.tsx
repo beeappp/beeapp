@@ -182,7 +182,7 @@ const LevelGridItem: FC<Props> = ({
               </Text>
             </VStack>
             <Button
-              textStyle={{ fontSize: 22 }}
+              textStyle={{ fontSize: 20 }}
               onPress={() => {
                 setIsVisible(false);
               }}

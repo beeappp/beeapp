@@ -218,6 +218,7 @@ const VideoLessonScreen = () => {
   };
 
   const exitVideoLesson = useCallback(() => {
+    playerRef.current?.pause?.();
     setTypeModal(1);
     open();
   }, []);
@@ -256,7 +257,10 @@ const VideoLessonScreen = () => {
         title: 'video_exitHeader',
         description: 'video_exitText',
         topButtonText: 'video_exit',
-        topButtonFunc: close,
+        topButtonFunc: () => {
+          close();
+          playerRef.current?.resume?.();
+        },
         topButtonDisabled: false,
         bottomButtonText: 'video_stay',
         bottomButtonFunc: () => {
@@ -326,12 +330,11 @@ const VideoLessonScreen = () => {
         .toString()
         .padStart(2, '0')}`;
 
-    // if (startRecord) {
-    //   pause();
-    //   setIsRecording(true);
-    // }
+    if (startRecord) {
+      pause();
+      setIsRecording(true);
+    }
   };
-  console.log('currentLesson', currentLesson);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

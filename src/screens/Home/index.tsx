@@ -1,8 +1,4 @@
-import {
-  HStack,
-  ScrollView,
-  VStack,
-} from '@gluestack-ui/themed';
+import { HStack, ScrollView, VStack } from '@gluestack-ui/themed';
 import React from 'react';
 import { Layout } from '../../navigator/Layout';
 import moment from 'moment';
@@ -48,21 +44,19 @@ const HomeScreen = () => {
             <VStack width={'100%'} height={'100%'}>
               <VStack w={'100%'} pt={30}>
                 <Text style={styles.textHeader}>{t('hello')}</Text>
-                <Text style={styles.textHeader}>
-                  {`${currentUser?.name}!`}
-                </Text>
+                <Text style={styles.textHeader}>{`${currentUser?.name}!`}</Text>
               </VStack>
               <VStack flex={1} style={styles.cardContainer}>
-                  <YellowCard
-                    onPress={() => {
-                      navigation.navigate('ClassLevel');
-                    }}
-                  />
-                  <BlueCard
-                    onPress={() => {
-                      navigation.navigate('ReadKuran');
-                    }}
-                  />
+                <YellowCard
+                  onPress={() => {
+                    navigation.navigate('ClassLevel');
+                  }}
+                />
+                <BlueCard
+                  onPress={() => {
+                    navigation.navigate('ReadKuran');
+                  }}
+                />
               </VStack>
             </VStack>
           </VStack>

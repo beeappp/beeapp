@@ -5,7 +5,7 @@ export default {
   register: 'Жаңадан тіркелу',
 
   //Register Screen
-  phoneField: 'Телефон нөміріңізді\nенгізіңіз',
+  phoneField: 'Телефон нөмеріңізді\nенгізіңіз',
   nameField: 'Өз есіміңізді\nенгізіңіз',
   surnameField: 'Өз фамилияны\nенгізіңіз',
   emailField: 'E-mail-ыңызды\nенгізіңіз',
@@ -22,7 +22,7 @@ export default {
   wrongPassword: 'Паролыныз сәйкес емес',
 
   //Login Screen
-  passwordLogin: 'Пароліңізді\nенгізіңіз',
+  passwordLogin: 'Құпия сөзді енгізіңіз',
 
   //CodeConfirmation
   codeField: 'Поштаға жіберілген\nкодты растаңыз',
