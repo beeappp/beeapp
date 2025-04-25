@@ -2,76 +2,28 @@
   "migIndex": 1,
   "data": [
     {
-      "path": "src/assets/fonts/SF-Pro-Display-Black.otf",
-      "sha1": "e33e46c6626b8cc1a2265f1c49a81099b39dd51f"
-    },
-    {
-      "path": "src/assets/fonts/SF-Pro-Display-BlackItalic.otf",
-      "sha1": "1ae00675c438f1ef608e92721de0a9452e0c1186"
+      "path": "src/assets/fonts/KFGQPCUthmanTahaNaskhRegular.ttf",
+      "sha1": "154d7299c366c1e24801fc832e2ecec25c28b096"
     },
     {
       "path": "src/assets/fonts/SF-Pro-Display-Bold.otf",
       "sha1": "33fbe9d59b9b966b7b44cfe9cee0521d95948a36"
     },
     {
-      "path": "src/assets/fonts/SF-Pro-Display-BoldItalic.otf",
-      "sha1": "cbb0f422bc0571b0b089364a7ac2100b2569f2f3"
-    },
-    {
-      "path": "src/assets/fonts/SF-Pro-Display-Heavy.otf",
-      "sha1": "bb6474002f63746cf74d891d29ed2d1dd00535e0"
-    },
-    {
-      "path": "src/assets/fonts/SF-Pro-Display-HeavyItalic.otf",
-      "sha1": "fd4dfb6bc98e5e727f60666d2af785bd76411bae"
-    },
-    {
       "path": "src/assets/fonts/SF-Pro-Display-Light.otf",
       "sha1": "499ff875a0b2880976afd58d69592755569086df"
-    },
-    {
-      "path": "src/assets/fonts/SF-Pro-Display-LightItalic.otf",
-      "sha1": "f1fffd528c69bb670e376e9fb398b0533759d8eb"
     },
     {
       "path": "src/assets/fonts/SF-Pro-Display-Medium.otf",
       "sha1": "122adb62377e256db0122abefc29295218928fea"
     },
     {
-      "path": "src/assets/fonts/SF-Pro-Display-MediumItalic.otf",
-      "sha1": "61cb766e45b123343bd54187e714c207e66b5c71"
-    },
-    {
       "path": "src/assets/fonts/SF-Pro-Display-Regular.otf",
       "sha1": "737ea8c075bdae8392f2c92b17183c270b997f67"
     },
     {
-      "path": "src/assets/fonts/SF-Pro-Display-RegularItalic.otf",
-      "sha1": "0807316a4ea2dec16cd3cae47904bc21fca0df04"
-    },
-    {
       "path": "src/assets/fonts/SF-Pro-Display-Semibold.otf",
       "sha1": "56cc1969e1927491ab50635a0d16d4827bbce63c"
-    },
-    {
-      "path": "src/assets/fonts/SF-Pro-Display-SemiboldItalic.otf",
-      "sha1": "e62f2e25b2192712150a4974d26b82c4b5b1b46c"
-    },
-    {
-      "path": "src/assets/fonts/SF-Pro-Display-Thin.otf",
-      "sha1": "eca062853d7eae18d64d42aca5c63464729d013d"
-    },
-    {
-      "path": "src/assets/fonts/SF-Pro-Display-ThinItalic.otf",
-      "sha1": "de477d0891c13e5d42e817446928b4a1adc1d188"
-    },
-    {
-      "path": "src/assets/fonts/SF-Pro-Display-Ultralight.otf",
-      "sha1": "2947aa9a3cf169319f15cb7aef94497cb6cd9dd4"
-    },
-    {
-      "path": "src/assets/fonts/SF-Pro-Display-UltralightItalic.otf",
-      "sha1": "8aadd7a8a8634658318388070c9dad651aef9e19"
     },
     {
       "path": "src/assets/fonts/ScheherazadeNew-Bold.ttf",

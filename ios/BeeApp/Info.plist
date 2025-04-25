@@ -24,8 +24,6 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSUserTrackingUsageDescription</key>
-    <string>This app uses device identifiers to track marketing attribution and app usage.  Your data is kept confidential and is not shared with any 3rd parties or advertising partners.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -43,12 +41,14 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
 	<key>NSCameraUsageDescription</key>
 	<string>Give $(PRODUCT_NAME) permission to use your camera.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string></string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(PRODUCT_NAME) uses the microphone to assess your pronunciation and provide feedback during lessons. The microphone is only activated when you participate in speaking exercises.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app uses device identifiers to track marketing attribution and app usage.  Your data is kept confidential and is not shared with any 3rd parties or advertising partners.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SF-Pro-Display-Bold.otf</string>
@@ -60,6 +60,7 @@
 		<string>ScheherazadeNew-Medium.ttf</string>
 		<string>ScheherazadeNew-Regular.ttf</string>
 		<string>ScheherazadeNew-SemiBold.ttf</string>
+		<string>KFGQPCUthmanTahaNaskhRegular.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string></string>

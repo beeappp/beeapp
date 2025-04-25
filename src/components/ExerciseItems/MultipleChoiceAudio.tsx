@@ -24,6 +24,7 @@ import TrackPlayer, {
 // import YoutubePlayer from 'react-native-youtube-iframe';
 import CustomVideoPlayer from '../VideoPlayer/VideoPlayer';
 import { VideoPlayerRef } from 'react-native-video-player';
+import ExerciseVideoPlayer from '../VideoPlayer/ExerciseVideoPlayer';
 
 interface Props {
   questionItem: Question;
@@ -55,6 +56,31 @@ const MultipleChoiceAudio: FC<Props> = ({
   const path = useMemo(() => {
     return questionType === 3 ? questionFilePath : '';
   }, [questionType, questionFilePath]);
+
+  const processTextWithArabic = (questionText: string) => {
+    const arabicRegex =
+      /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+/g;
+    const hasArabic = arabicRegex.test(questionText);
+
+    if (!hasArabic) {
+      return {
+        originalText: questionText,
+        arabicWords: null,
+        nonArabicText: questionText,
+      };
+    }
+    const arabicWords = questionText.match(arabicRegex) || [];
+    const nonArabicText = questionText.replace(arabicRegex, '').trim();
+    return {
+      originalText: questionText,
+      arabicWords: arabicWords.length > 0 ? arabicWords : null,
+      nonArabicText: nonArabicText || questionText,
+    };
+  };
+
+  const { arabicWords, originalText, nonArabicText } = useMemo(() => {
+    return processTextWithArabic(questionItem.question_text);
+  }, [questionItem.question_text]);
 
   const playbackState = usePlaybackState();
 
@@ -141,9 +167,16 @@ const MultipleChoiceAudio: FC<Props> = ({
       pt={50}
       pb={25}
     >
-      <Text style={[styles.headerText, { writingDirection: 'ltr' }]}>
-        {questionItem.question_text}
-      </Text>
+      <VStack gap={20}>
+        <Text style={[styles.headerText, { writingDirection: 'ltr' }]}>
+          {arabicWords
+            ? nonArabicText.charAt(0).toUpperCase() + nonArabicText.slice(1)
+            : questionItem.question_text}
+        </Text>
+        {arabicWords && (
+          <Text style={[styles.centerArabText]}>{arabicWords.join(' ')}</Text>
+        )}
+      </VStack>
 
       {questionFilePath && questionType !== 3 ? (
         <TouchableOpacity
@@ -167,7 +200,7 @@ const MultipleChoiceAudio: FC<Props> = ({
           overflow="hidden"
           borderRadius={20}
         >
-          <CustomVideoPlayer
+          <ExerciseVideoPlayer
             controlsRef={playerRef}
             width={'100%'}
             height={'100%'}
@@ -304,5 +337,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 24,
     color: '#000',
+  },
+  centerArabText: {
+    fontSize: 50,
+    color: palette.lightDark2,
+    textAlign: 'center',
+    fontFamily: typography.arabBold,
   },
 });
