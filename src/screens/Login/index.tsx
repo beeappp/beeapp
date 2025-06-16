@@ -71,15 +71,20 @@ const LoginScreen = () => {
         password: passwordLogin,
       });
 
-      if (res.email_verified_at) {
-        await getCourses(1);
-        await getSurahs();
-        await getJuzs();
-        setAuthorize(true);
-      } else {
-        await resendValidation(res.email);
-        navigation.navigate('CodeConfermation');
-      }
+      await getCourses(1);
+      await getSurahs();
+      await getJuzs();
+      setAuthorize(true);
+
+      // if (res.email_verified_at) {
+      //   await getCourses(1);
+      //   await getSurahs();
+      //   await getJuzs();
+      //   setAuthorize(true);
+      // } else {
+      //   await resendValidation(res.email);
+      //   navigation.navigate('CodeConfermation');
+      // }
     } catch (error: any) {
       console.log('Login error', error);
       Toast.show({
