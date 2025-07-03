@@ -27,7 +27,6 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@shopify/flash-list": "^1.7.1",
     "axios": "^1.7.4",
-    "ffmpeg-kit-react-native": "^6.0.2",
     "i18next": "^23.15.1",
     "jotai": "^2.10.1",
     "jotai-nexus": "^1.0.7",
@@ -97,5 +96,5 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yadrn@3.6.4"
 }

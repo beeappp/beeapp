@@ -10,7 +10,8 @@ export const verifyCode = createAsyncThunk<
   try {
     await baseService.post('/api/code/verify', param);
   } catch (error: any) {
-    if (error.response && error.response.data) {
+    if (error.response?.data?.message) {
+      console.log('error.response.data.message', error.response.data.message);
       return rejectWithValue(error.response.data.message);
     }
     return rejectWithValue('Invalid credentials.');

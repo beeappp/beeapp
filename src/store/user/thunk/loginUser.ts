@@ -17,8 +17,9 @@ export const loginUser = createAsyncThunk<
       loginData
     );
     const { token, user } = response.data.data;
-    console.log('response', response);
-    save(accessToken, token);
+    console.log('accessToken, token', token);
+
+    await save(accessToken, token);
     setAuthHeader(token);
     return user;
   } catch (error: any) {

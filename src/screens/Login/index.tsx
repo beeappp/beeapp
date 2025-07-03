@@ -62,7 +62,6 @@ const LoginScreen = () => {
   }, []);
 
   const login = async (values: FieldValues) => {
-    console.log('values', values);
     const { passwordLogin, phone } = values;
     const formattedNumber = phone.replace(/\D/g, '');
     try {
@@ -70,11 +69,31 @@ const LoginScreen = () => {
         phone: formattedNumber,
         password: passwordLogin,
       });
+      console.log('res', res);
 
       if (res.email_verified_at) {
-        await getCourses(1);
-        await getSurahs();
-        await getJuzs();
+        try {
+          console.log('1');
+
+          await getCourses(1);
+          console.log('2');
+        } catch (err) {
+          console.log('Ошибка в getCourses:', err);
+        }
+
+        try {
+          console.log('3');
+          await getSurahs();
+          console.log('4');
+        } catch (err) {
+          console.log('Ошибка в getSurahs:', err);
+        }
+
+        try {
+          await getJuzs();
+        } catch (err) {
+          console.log('Ошибка в getJuzs:', err);
+        }
         setAuthorize(true);
       } else {
         await resendValidation(res.email);
@@ -169,7 +188,6 @@ const LoginScreen = () => {
               buttonStyle={{
                 marginBottom: Platform.OS === 'android' ? 45 : undefined,
               }}
-              disabled={isFocused || isLoading || textLoad}
               borderRadius={16}
               textStyle={styles.buttonText}
               onPress={

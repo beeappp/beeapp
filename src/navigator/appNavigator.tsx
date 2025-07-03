@@ -9,7 +9,7 @@ import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import toastConfig from '../components/CustomToast';
 import LottieSplashScreen from 'react-native-lottie-splash-screen';
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, { State } from 'react-native-track-player';
 import PrivateNavigator, { PrivateStackParamList } from './privateNavigator';
 import PublicNavigator, { PublicStackParamList } from './publicNavigator';
 
@@ -56,8 +56,14 @@ const AppNavigator = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        await TrackPlayer.setupPlayer();
+        // const playerState = await TrackPlayer.getState();
+
+        // if (playerState === State.None) {
+        //   await TrackPlayer.setupPlayer();
+        // }
+
         const token = await load('accessToken');
+
         if (token) {
           setAuthHeader(token);
           try {

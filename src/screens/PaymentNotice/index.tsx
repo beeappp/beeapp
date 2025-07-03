@@ -1,4 +1,4 @@
-import { Box, HStack, ScrollView, View, VStack } from '@gluestack-ui/themed';
+import { HStack, ScrollView, View, VStack } from '@gluestack-ui/themed';
 import React, { FC, useRef } from 'react';
 import { Layout } from '../../navigator/Layout';
 import { StyleSheet } from 'react-native';

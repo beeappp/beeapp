@@ -24,7 +24,11 @@ export const getSurahs = createAsyncThunk<
       return response.data;
     }
   } catch (err: any) {
+    console.log('er', err);
+
     if (err.response && err.response.data) {
+      console.log('err.response.data.message', err.response.data.message);
+
       return rejectWithValue(err.response.data.message);
     }
     return rejectWithValue('An unknown error occurred.');

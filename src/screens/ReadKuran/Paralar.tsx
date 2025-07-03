@@ -15,6 +15,7 @@ const platform = Platform.OS == 'android';
 const ParalarScreen = () => {
   const navigation = useNavigation<AppStackScreenProps['navigation']>();
   const { juzs } = useMainQuran();
+  console.log('juzs', juzs);
 
   const surahCount = useMemo(() => {
     return juzs.reduce((acc, { surahs }, index) => {
