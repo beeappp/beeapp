@@ -9,7 +9,7 @@ export const accessQuranToken = 'accessQuranToken';
 export const authAccessTokenHeaderName = 'Authorization';
 
 const baseQuranService = axios.create({
-  baseURL: 'http://beeapp.kz:16',
+  baseURL: 'http://beeapp.kz:16 ',
 });
 
 export const saveQuranTokens = async (access_token: string) => {
